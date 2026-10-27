@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Check that dist/ is up to date
+        run: |
+          if [ -n "$(git status --porcelain dist)" ]; then
+            echo "::error::dist/ is out of date. Run npm run build and commit the result."
+            git status --porcelain dist
+            exit 1
+          fi
+
+  # Runs the action itself against the Optiki site. Skipped when the OPTIKI_API_TOKEN secret isn't available,
+  # e.g. on pull requests from forks.
+  scan:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      OPTIKI_API_TOKEN: ${{ secrets.OPTIKI_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Scan with this action
+        id: optiki
+        if: env.OPTIKI_API_TOKEN != ''
+        uses: ./
+        with:
+          url: https://optikii.netlify.app
+      - name: Print the outputs
+        if: steps.optiki.outcome == 'success'
+        run: |
+          echo "Scan:     ${{ steps.optiki.outputs.scanId }} (${{ steps.optiki.outputs.status }})"
+          echo "Score:    ${{ steps.optiki.outputs.score }}"
+          echo "Findings: ${{ steps.optiki.outputs.findings }}"
+          echo "Report:   ${{ steps.optiki.outputs.reportUrl }}"

@@ -1,0 +1,43 @@
+name: Optiki AI Legibility Scan
+description: Scan how legible your site is to AI agents with Optiki, and report the score in your workflow.
+author: Tibz-Dankan
+
+branding:
+  icon: eye
+  color: purple
+
+inputs:
+  url:
+    description: The URL of the page to scan. With multiplePageScan, the page the crawl starts from.
+    required: true
+  multiplePageScan:
+    description: Crawl and scan up to 25 pages of the same site, starting from url.
+    required: false
+    default: "false"
+  minScore:
+    description: Fail the job when the overall score (0-100) is below this. 0 never fails on score.
+    required: false
+    default: "0"
+  token:
+    description: Optiki API token. Defaults to the OPTIKI_API_TOKEN environment variable.
+    required: false
+  apiUrl:
+    description: Base URL of the Optiki token API. Only change this for testing.
+    required: false
+    default: https://optikiapi.tuliime.com/client/v1
+
+outputs:
+  scanId:
+    description: The ID of the scan.
+  status:
+    description: The final status of the scan (COMPLETED or FAILED).
+  score:
+    description: The overall AI legibility score (0-100). Empty when no rule applied.
+  findings:
+    description: The number of findings.
+  reportUrl:
+    description: Link to the full report on Optiki (sign in as the token's owner to view it).
+
+runs:
+  using: node24
+  main: dist/index.js

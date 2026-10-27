@@ -1,0 +1,38 @@
+{
+  "name": "optiki-gh-action",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GitHub Action that scans the AI legibility of your site with Optiki",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/index.ts -o dist --license licenses.txt",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "all": "npm run typecheck && npm run test && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tibz-Dankan/optiki-gh-action.git"
+  },
+  "keywords": [
+    "actions",
+    "optiki",
+    "ai",
+    "legibility",
+    "accessibility"
+  ],
+  "author": "Tibz-Dankan",
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@actions/core": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "@vercel/ncc": "^0.45.0",
+    "typescript": "~5.9.3",
+    "vitest": "^5.0.5"
+  }
+}
